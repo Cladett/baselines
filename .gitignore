@@ -21,7 +21,7 @@ keys/
 .idea
 
 logs/
-
+models/
 .ipynb_checkpoints
 ghostdriver.log
 
