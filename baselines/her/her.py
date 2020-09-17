@@ -4,6 +4,7 @@ import click
 import numpy as np
 import json
 from mpi4py import MPI
+import copy
 
 from baselines import logger
 from baselines.common import set_global_seeds, tf_util
@@ -106,8 +107,11 @@ def learn(*, network, env, total_timesteps,
     rank_seed = seed + 1000000 * rank if seed is not None else None
     set_global_seeds(rank_seed)
 
+    # Mod by Claudia D'Ettorre (11 Sep 2020): deep copy to avoid scratching
+    # the config module dictionary that contains the default parameters
+    params = copy.deepcopy(config.DEFAULT_PARAMS)
+
     # Prepare params.
-    params = config.DEFAULT_PARAMS
     env_name = env.spec.id
     params['env_name'] = env_name
     params['replay_strategy'] = replay_strategy
@@ -115,7 +119,7 @@ def learn(*, network, env, total_timesteps,
         params.update(config.DEFAULT_ENV_PARAMS[env_name])  # merge env-specific parameters in
     params.update(**override_params)  # makes it possible to override any parameter
     with open(os.path.join(logger.get_dir(), 'params.json'), 'w') as f:
-         json.dump(params, f)
+        json.dump(params, f)
     params = config.prepare_params(params)
     params['rollout_batch_size'] = env.num_envs
 
@@ -138,7 +142,10 @@ def learn(*, network, env, total_timesteps,
         logger.warn()
 
     dims = config.configure_dims(params)
-    policy = config.configure_ddpg(dims=dims, params=params, clip_return=clip_return)
+    # Mod by Claudia D'Ettorre (11 Sep 2020): passing reuse to ddpg in case the user
+    # specified in kwargs
+    reuse = True if 'reuse' in params and params['reuse'] else False
+    policy = config.configure_ddpg(dims=dims, params=params, reuse=reuse, clip_return=clip_return)
     if load_path is not None:
         tf_util.load_variables(load_path)
 

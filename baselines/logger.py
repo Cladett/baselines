@@ -385,7 +385,7 @@ def configure(dir=None, format_strs=None, comm=None, log_suffix=''):
     rank = get_rank_without_mpi_import()
     if rank > 0:
         log_suffix = log_suffix + "-rank%03i" % rank
-
+    
     if format_strs is None:
         if rank == 0:
             format_strs = os.getenv('OPENAI_LOG_FORMAT', 'stdout,log,csv').split(',')
