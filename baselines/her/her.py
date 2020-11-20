@@ -32,8 +32,10 @@ def train(*, policy, rollout_worker, evaluator,
 
     logger.info("Training...")
     best_success_rate = -1
-
-    if policy.bc_loss == 1: policy.init_demo_buffer(demo_file) #initialize demo buffer if training with demonstrations
+    
+    # Initialize demo buffer if training with demonstrations
+    if demo_file is not None and policy.bc_loss == 1:
+        policy.init_demo_buffer(demo_file)
 
     # num_timesteps = n_epochs * n_cycles * rollout_length * number of rollout workers
     for epoch in range(n_epochs):
@@ -103,7 +105,7 @@ def learn(*, network, env, total_timesteps,
         rank = MPI.COMM_WORLD.Get_rank()
         num_cpu = MPI.COMM_WORLD.Get_size()
 
-    # Seed everything.
+    # Seed everything
     rank_seed = seed + 1000000 * rank if seed is not None else None
     set_global_seeds(rank_seed)
 
@@ -111,7 +113,7 @@ def learn(*, network, env, total_timesteps,
     # the config module dictionary that contains the default parameters
     params = copy.deepcopy(config.DEFAULT_PARAMS)
 
-    # Prepare params.
+    # Prepare params
     env_name = env.spec.id
     params['env_name'] = env_name
     params['replay_strategy'] = replay_strategy
@@ -123,10 +125,11 @@ def learn(*, network, env, total_timesteps,
     params = config.prepare_params(params)
     params['rollout_batch_size'] = env.num_envs
 
-    if demo_file is not None:
-        params['bc_loss'] = 1
-    params.update(kwargs)
+    # Mod by Claudia D'Ettorre (19 Nov 2020): if there is no demo file there 
+    # there is no behavioural cloning (bc_loss)
+    params['bc_loss'] = 1 if demo_file is not None else 0
 
+    params.update(kwargs)
     config.log_params(params, logger=logger)
 
     if num_cpu == 1:
@@ -145,7 +148,9 @@ def learn(*, network, env, total_timesteps,
     # Mod by Claudia D'Ettorre (11 Sep 2020): passing reuse to ddpg in case the user
     # specified in kwargs
     reuse = True if 'reuse' in params and params['reuse'] else False
-    policy = config.configure_ddpg(dims=dims, params=params, reuse=reuse, clip_return=clip_return)
+
+    policy = config.configure_ddpg(dims=dims, params=params, reuse=reuse, 
+                                   clip_return=clip_return)
     if load_path is not None:
         tf_util.load_variables(load_path)
 
@@ -176,7 +181,7 @@ def learn(*, network, env, total_timesteps,
 
     n_cycles = params['n_cycles']
     n_epochs = total_timesteps // n_cycles // rollout_worker.T // rollout_worker.rollout_batch_size
-
+    
     return train(
         save_path=save_path, policy=policy, rollout_worker=rollout_worker,
         evaluator=evaluator, n_epochs=n_epochs, n_test_rollouts=params['n_test_rollouts'],
