@@ -1,3 +1,8 @@
+"""
+@Author Claudia D'Ettorre (c.dettorre@ucl.ac.uk)
+@Date   27 Nov 2020
+@Brief  This method is called from make_vect_env inside the common/cmd_util.pt
+"""
 import multiprocessing as mp
 
 import numpy as np
@@ -38,16 +43,19 @@ def worker(remote, parent_remote, env_fn_wrappers):
 
 class SubprocVecEnv(VecEnv):
     """
-    VecEnv that runs multiple environments in parallel in subproceses and communicates with them via pipes.
+    VecEnv that runs multiple environments in parallel in subproceses and 
+    communicates with them via pipes.
     Recommended to use when num_envs > 1 and step() can be a bottleneck.
     """
     def __init__(self, env_fns, spaces=None, context='spawn', in_series=1):
         """
         Arguments:
 
-        env_fns: iterable of callables -  functions that create environments to run in subprocesses. Need to be cloud-pickleable
+        env_fns: iterable of callables -  functions that create environments to 
+        run in subprocesses. Need to be cloud-pickleable
         in_series: number of environments to run in series in a single process
-        (e.g. when len(env_fns) == 12 and in_series == 3, it will run 4 processes, each running 3 envs in series)
+        (e.g. when len(env_fns) == 12 and in_series == 3, it will run 4 processes, 
+        each running 3 envs in series)
         """
         self.waiting = False
         self.closed = False

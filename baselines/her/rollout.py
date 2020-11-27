@@ -1,3 +1,9 @@
+"""
+@Author Claudia D'Ettorre (c.dettorre@ucl.ac.uk)
+@Date   27 Nov 2020
+@Brief  Called from her.py 
+"""
+
 from collections import deque
 
 import numpy as np
@@ -12,22 +18,31 @@ class RolloutWorker:
     def __init__(self, venv, policy, dims, logger, T, rollout_batch_size=1,
                  exploit=False, use_target_net=False, compute_Q=False, noise_eps=0,
                  random_eps=0, history_len=100, render=False, monitor=False, **kwargs):
-        """Rollout worker generates experience by interacting with one or many environments.
+        """Rollout worker generates experience by interacting with one 
+        or many environments.
 
         Args:
             venv: vectorized gym environments.
-            policy (object): the policy that is used to act
-            dims (dict of ints): the dimensions for observations (o), goals (g), and actions (u)
-            logger (object): the logger that is used by the rollout worker
-            rollout_batch_size (int): the number of parallel rollouts that should be used
-            exploit (boolean): whether or not to exploit, i.e. to act optimally according to the
-                current policy without any exploration
-            use_target_net (boolean): whether or not to use the target net for rollouts
-            compute_Q (boolean): whether or not to compute the Q values alongside the actions
-            noise_eps (float): scale of the additive Gaussian noise
-            random_eps (float): probability of selecting a completely random action
-            history_len (int): length of history for statistics smoothing
-            render (boolean): whether or not to render the rollouts
+            policy (object):          the policy that is used to act
+            dims (dict of ints):      the dimensions for observations (o), 
+                                      goals (g), and actions (u)
+            logger (object):          the logger that is used by the rollout 
+                                      worker
+            rollout_batch_size (int): the number of parallel rollouts that 
+                                      should be used
+            exploit (boolean):        whether or not to exploit, i.e. to act 
+                                      optimally according to the current 
+                                      policy without any exploration
+            use_target_net (boolean): whether or not to use the target net 
+                                      for rollouts
+            compute_Q (boolean):      whether or not to compute the Q values 
+                                      alongside the actions
+            noise_eps (float):        scale of the additive Gaussian noise
+            random_eps (float):       probability of selecting a completely 
+                                      random action
+            history_len (int):        length of history for statistics 
+                                      smoothing
+            render (boolean):         whether or not to render the rollouts
         """
 
         assert self.T > 0
@@ -48,7 +63,8 @@ class RolloutWorker:
         self.g = self.obs_dict['desired_goal']
 
     def generate_rollouts(self):
-        """Performs `rollout_batch_size` rollouts in parallel for time horizon `T` with the current
+        """Performs `rollout_batch_size` rollouts in parallel for time 
+        horizon `T` with the current
         policy acting on it accordingly.
         """
         self.reset_all_rollouts()

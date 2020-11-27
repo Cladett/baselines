@@ -157,17 +157,21 @@ class DDPG(object):
         else:
             return ret
 
-    def init_demo_buffer(self, demoDataFile, update_stats=True): #function that initializes the demo buffer
+    def init_demo_buffer(self, demoDataFile, update_stats=True): 
+        # function that initializes the demo buffer
         assert(demoDataFile is not None)
-        demoData = np.load(demoDataFile, allow_pickle=True) #load the demonstration data from data file
+        # load the demonstration data from data file
+        demoData = np.load(demoDataFile, allow_pickle=True) 
         info_keys = [key.replace('info_', '') for key in self.input_dims.keys() if key.startswith('info_')]
         info_values = [np.empty((self.T - 1, 1, self.input_dims['info_' + key]), np.float32) for key in info_keys]
 
+        # Modifying the data structure of demonstration
         demo_data_obs = demoData['obs']
-        demo_data_acs = demoData['acs']
+        demo_data_acs = demoData['acs'] 
         demo_data_info = demoData['info']
 
-        for epsd in range(self.num_demo): # we initialize the whole demo buffer at the start of the training
+        # we initialize the whole demo buffer at the start of the training
+        for epsd in range(self.num_demo): 
             obs, acts, goals, achieved_goals = [], [] ,[] ,[]
             i = 0
             for transition in range(self.T - 1):
@@ -191,7 +195,9 @@ class DDPG(object):
 
             episode = convert_episode_to_batch_major(episode)
             global DEMO_BUFFER
-            DEMO_BUFFER.store_episode(episode) # create the observation dict and append them into the demonstration buffer
+            # Create the observation dict and append them into the 
+            # demonstration buffer
+            DEMO_BUFFER.store_episode(episode) 
             logger.debug("Demo buffer size currently ", DEMO_BUFFER.get_current_size()) #print out the demonstration buffer size
 
             if update_stats:
@@ -285,6 +291,7 @@ class DDPG(object):
         if batch is None:
             batch = self.sample_batch()
         assert len(self.buffer_ph_tf) == len(batch)
+        # Run tf session 
         self.sess.run(self.stage_op, feed_dict=dict(zip(self.buffer_ph_tf, batch)))
 
     def train(self, stage=True):

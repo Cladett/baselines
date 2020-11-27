@@ -1,5 +1,10 @@
-import os
+"""
+@Author  Claudia D'Ettorre (c.dettorre@ucl.ac.uk)
+@Date    27 Nov 2020
+@Brief   HER implementation from baselines.
+"""
 
+import os
 import click
 import numpy as np
 import json
@@ -19,12 +24,13 @@ def mpi_average(value):
         value = [0.]
     return mpi_moments(np.array(value))[0]
 
-
+# Calling from the learn
 def train(*, policy, rollout_worker, evaluator,
-          n_epochs, n_test_rollouts, n_cycles, n_batches, policy_save_interval,
-          save_path, demo_file, **kwargs):
+          n_epochs, n_test_rollouts, n_cycles, n_batches, 
+          policy_save_interval, save_path, demo_file, **kwargs):
     rank = MPI.COMM_WORLD.Get_rank()
 
+    # Saving the model
     if save_path:
         latest_policy_path = os.path.join(save_path, 'policy_latest.pkl')
         best_policy_path = os.path.join(save_path, 'policy_best.pkl')
@@ -35,12 +41,12 @@ def train(*, policy, rollout_worker, evaluator,
     
     # Initialize demo buffer if training with demonstrations
     if demo_file is not None and policy.bc_loss == 1:
-        policy.init_demo_buffer(demo_file)
+        policy.init_demo_buffer(demo_file) # from ddpg
 
     # num_timesteps = n_epochs * n_cycles * rollout_length * number of rollout workers
     for epoch in range(n_epochs):
         # train
-        rollout_worker.clear_history()
+        rollout_worker.clear_history() # Clear histories used for statistics
         for _ in range(n_cycles):
             episode = rollout_worker.generate_rollouts()
             policy.store_episode(episode)
@@ -149,6 +155,7 @@ def learn(*, network, env, total_timesteps,
     # specified in kwargs
     reuse = True if 'reuse' in params and params['reuse'] else False
 
+    # Initialize the class of ddpg.py
     policy = config.configure_ddpg(dims=dims, params=params, reuse=reuse, 
                                    clip_return=clip_return)
     if load_path is not None:
@@ -176,7 +183,8 @@ def learn(*, network, env, total_timesteps,
 
     eval_env = eval_env or env
 
-    rollout_worker = RolloutWorker(env, policy, dims, logger, monitor=True, **rollout_params)
+    rollout_worker = RolloutWorker(env, policy, dims, logger, monitor=True, 
+                                   **rollout_params)
     evaluator = RolloutWorker(eval_env, policy, dims, logger, **eval_params)
 
     n_cycles = params['n_cycles']

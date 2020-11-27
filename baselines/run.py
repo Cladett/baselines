@@ -1,3 +1,11 @@
+"""
+@Author: Claudia D'Ettorre (c.dettorre@ucl.ac.uk)
+@Date: 20 Nov 2020
+@Brief: This code it's from Baseliens of OpenAI. This is used to run experiments
+        to train agents.
+"""
+
+
 import sys
 import re
 import multiprocessing
@@ -6,8 +14,9 @@ import gym
 from collections import defaultdict
 import tensorflow as tf
 import numpy as np
-import dVRL_simulator
 
+# Environment imports
+import dVRL_simulator
 from baselines.common.vec_env import VecFrameStack, VecNormalize, VecEnv
 from baselines.common.vec_env.vec_video_recorder import VecVideoRecorder
 from baselines.common.cmd_util import common_arg_parser, parse_unknown_args, make_vec_env, make_env
@@ -15,28 +24,32 @@ from baselines.common.tf_util import get_session
 from baselines import logger
 from importlib import import_module
 
+# For mpirun
 try:
     from mpi4py import MPI
 except ImportError:
     MPI = None
 
+# Import module for pybullet physics engine
 try:
     import pybullet_envs
 except ImportError:
     pybullet_envs = None
 
+# Physics library based on pybullet
 try:
     import roboschool
 except ImportError:
     roboschool = None
 
+# Initializing the dictionary for env type.
 _game_envs = defaultdict(set)
 for env in gym.envs.registry.all():
     # TODO: solve this with regexes
     env_type = env.entry_point.split(':')[0].split('.')[-1]
     _game_envs[env_type].add(env.id)
 
-# reading benchmark names directly from retro requires
+# Reading benchmark names directly from retro requires
 # importing retro here, and for some reason that crashes tensorflow
 # in ubuntu
 _game_envs['retro'] = {
@@ -50,25 +63,38 @@ _game_envs['retro'] = {
     'SpaceInvaders-Snes',
 }
 
+# Importing custom type environments
 _game_envs['custom_type'] = {
     'dVRL-v0'    
 }
 
+
 def train(args, extra_args):
+
+    # Definition of the environment
     env_type, env_id = get_env_type(args)
     print('env_type: {}'.format(env_type))
 
+    # Initialization
     total_timesteps = int(args.num_timesteps)
     seed = args.seed
 
+    # Definition of the learning algorithm based on the --alg defined
     learn = get_learn_function(args.alg)
     alg_kwargs = get_learn_function_defaults(args.alg, env_type)
+    # Updating the dictionary of extra args, insert from the user
+    # TODO: the deep copy here might be a problem
     alg_kwargs.update(extra_args)
 
     env = build_env(args)
-    if args.save_video_interval != 0:
-        env = VecVideoRecorder(env, osp.join(logger.get_dir(), "videos"), record_video_trigger=lambda x: x % args.save_video_interval == 0, video_length=args.save_video_length)
 
+    # If video has to be saved recorded using gym.wrappers.monitoring
+    if args.save_video_interval != 0:
+        env = VecVideoRecorder(env, osp.join(logger.get_dir(), "videos"), 
+                record_video_trigger=lambda x: x % args.save_video_interval == 0, 
+                video_length=args.save_video_length)
+
+    # Definition of the network type to be used. Default mpl
     if args.network:
         alg_kwargs['network'] = args.network
     else:
@@ -77,6 +103,7 @@ def train(args, extra_args):
 
     print('Training {} on {}:{} with arguments \n{}'.format(args.alg, env_type, env_id, alg_kwargs))
 
+    # Learning step: using the learning function of the chosen algorithm 
     model = learn(
         env=env,
         seed=seed,
@@ -88,6 +115,7 @@ def train(args, extra_args):
 
 
 def build_env(args):
+    # Convfiguring the CPUs
     ncpu = multiprocessing.cpu_count()
     if sys.platform == 'darwin': ncpu //= 2
     nenv = args.num_env or ncpu
@@ -110,11 +138,17 @@ def build_env(args):
         config = tf.ConfigProto(allow_soft_placement=True,
                                intra_op_parallelism_threads=1,
                                inter_op_parallelism_threads=1)
+        # Increases cpu usage, not limiting the number of process to the number 
+        # of cpus
         config.gpu_options.allow_growth = True
+        # Gets a default tf session: initializing cpus
         get_session(config=config)
 
         flatten_dict_observations = alg not in {'her'}
-        env = make_vec_env(env_id, env_type, args.num_env or 1, seed, reward_scale=args.reward_scale, flatten_dict_observations=flatten_dict_observations)
+        # Creating the environment
+        env = make_vec_env(env_id, env_type, args.num_env or 1, seed, 
+                           reward_scale=args.reward_scale, 
+                           flatten_dict_observations=flatten_dict_observations)
 
         if env_type == 'mujoco':
             env = VecNormalize(env, use_tf=True)
@@ -155,6 +189,7 @@ def get_default_network(env_type):
     else:
         return 'mlp'
 
+# Importing the algorithm module defined with the input variables
 def get_alg_module(alg, submodule=None):
     submodule = submodule or alg
     try:
@@ -180,10 +215,10 @@ def get_learn_function_defaults(alg, env_type):
     return kwargs
 
 
-
 def parse_cmdline_kwargs(args):
     '''
-    convert a list of '='-spaced command-line arguments to a dictionary, evaluating python objects when possible
+    convert a list of '='-spaced command-line arguments to a dictionary, 
+    evaluating python objects when possible
     '''
     def parse(v):
 
@@ -197,6 +232,11 @@ def parse_cmdline_kwargs(args):
 
 
 def configure_logger(log_path, **kwargs):
+    """
+    @Brief: if the log directory is not given then it's configured in a temp
+            directory. The logging format is different based on if mpi is used 
+            or not. 
+    """
     if log_path is not None:
         logger.configure(log_path)
     else:
@@ -204,25 +244,29 @@ def configure_logger(log_path, **kwargs):
 
 
 def main(args):
-    # configure logger, disable logging in child MPI processes (with rank > 0)
 
     arg_parser = common_arg_parser()
     args, unknown_args = arg_parser.parse_known_args(args)
     extra_args = parse_cmdline_kwargs(unknown_args)
 
+    # Configure logger, disable logging in child MPI processes (with rank > 0)
     if MPI is None or MPI.COMM_WORLD.Get_rank() == 0:
+        # rank identifies each process within the communicator
         rank = 0
         configure_logger(args.log_path)
     else:
         rank = MPI.COMM_WORLD.Get_rank()
         configure_logger(args.log_path, format_strs=[])
 
+    # Training the model
     model, env = train(args, extra_args)
 
+    # Saving the trained model
     if args.save_path is not None and rank == 0:
         save_path = osp.expanduser(args.save_path)
         model.save(save_path)
 
+    # Playing back the trained model
     if args.play:
         logger.log("Running trained model")
         obs = env.reset()

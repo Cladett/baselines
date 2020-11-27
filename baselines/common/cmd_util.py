@@ -1,5 +1,7 @@
 """
-Helpers for scripts like run_atari.py.
+@Author: Claudia D'Ettorre (c.dettorre@ucl.ac.uk) 
+@Date: 20 Nov 2020 
+@Brief: Helpers for scripts like run.py.
 """
 
 import os
@@ -65,6 +67,7 @@ def make_env(env_id, env_type, mpi_rank=0, subrank=0, seed=None, reward_scale=1.
 
     wrapper_kwargs = wrapper_kwargs or {}
     env_kwargs = env_kwargs or {}
+    # Loading the custom environemt
     if ':' in env_id:
         import re
         import importlib
@@ -80,10 +83,12 @@ def make_env(env_id, env_type, mpi_rank=0, subrank=0, seed=None, reward_scale=1.
     else:
         env = gym.make(env_id, **env_kwargs)
 
+    # Changing the observational space into a box type
     if flatten_dict_observations and isinstance(env.observation_space, gym.spaces.Dict):
         env = FlattenObservation(env)
 
     env.seed(seed + subrank if seed is not None else None)
+    # Wrapper to track the reward. It saves file in monitor.csv or json
     env = Monitor(env,
                   logger_dir and os.path.join(logger_dir, str(mpi_rank) + '.' + str(subrank)),
                   allow_early_resets=True)
@@ -96,6 +101,7 @@ def make_env(env_id, env_type, mpi_rank=0, subrank=0, seed=None, reward_scale=1.
             wrapper_kwargs['frame_stack'] = 1
         env = retro_wrappers.wrap_deepmind_retro(env, **wrapper_kwargs)
 
+    # Clipping the action to maximum and minimum values
     if isinstance(env.action_space, gym.spaces.Box):
         env = ClipActionsWrapper(env)
 

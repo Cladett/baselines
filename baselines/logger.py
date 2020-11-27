@@ -1,3 +1,9 @@
+"""
+@Author: Claudia D'Ettorre (c.dettorre@ucl.ac.uk) 
+@Date: 25 Nov 2020 
+@Brief: This is the code that is used inside baseline to configure the logging
+"""
+
 import os
 import sys
 import shutil
