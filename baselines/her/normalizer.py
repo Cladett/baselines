@@ -9,15 +9,19 @@ from baselines.her.util import reshape_for_broadcasting
 
 class Normalizer:
     def __init__(self, size, eps=1e-2, default_clip_range=np.inf, sess=None):
-        """A normalizer that ensures that observations are approximately distributed according to
-        a standard Normal distribution (i.e. have mean zero and variance one).
+        """A normalizer that ensures that observations are approximately 
+        distributed according to a standard Normal distribution 
+        (i.e. have mean zero and variance one).
 
         Args:
-            size (int): the size of the observation to be normalized
-            eps (float): a small constant that avoids underflows
-            default_clip_range (float): normalized observations are clipped to be in
-                [-default_clip_range, default_clip_range]
-            sess (object): the TensorFlow session to be used
+            size (int):                   the size of the observation to be 
+                                          normalized
+            eps (float):                  a small constant that avoids 
+                                          underflows
+            default_clip_range (float):   normalized observations are clipped 
+                                          to be in
+                                          [-default_clip_range, default_clip_range]
+            sess (object):                the TensorFlow session to be used
         """
         self.size = size
         self.eps = eps

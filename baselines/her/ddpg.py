@@ -26,45 +26,77 @@ class DDPG(object):
                  rollout_batch_size, subtract_goals, relative_goals, clip_pos_returns, clip_return,
                  bc_loss, q_filter, num_demo, demo_batch_size, prm_loss_weight, aux_loss_weight,
                  sample_transitions, gamma, reuse=False, **kwargs):
-        """Implementation of DDPG that is used in combination with Hindsight Experience Replay (HER).
-            Added functionality to use demonstrations for training to Overcome exploration problem.
+        """Implementation of DDPG that is used in combination with Hindsight 
+           Experience Replay (HER).
+           Added functionality to use demonstrations for training to Overcome
+           exploration problem.
 
         Args:
-            input_dims (dict of ints): dimensions for the observation (o), the goal (g), and the
-                actions (u)
-            buffer_size (int): number of transitions that are stored in the replay buffer
-            hidden (int): number of units in the hidden layers
-            layers (int): number of hidden layers
-            network_class (str): the network class that should be used (e.g. 'baselines.her.ActorCritic')
-            polyak (float): coefficient for Polyak-averaging of the target network
-            batch_size (int): batch size for training
-            Q_lr (float): learning rate for the Q (critic) network
-            pi_lr (float): learning rate for the pi (actor) network
-            norm_eps (float): a small value used in the normalizer to avoid numerical instabilities
-            norm_clip (float): normalized inputs are clipped to be in [-norm_clip, norm_clip]
-            max_u (float): maximum action magnitude, i.e. actions are in [-max_u, max_u]
-            action_l2 (float): coefficient for L2 penalty on the actions
-            clip_obs (float): clip observations before normalization to be in [-clip_obs, clip_obs]
-            scope (str): the scope used for the TensorFlow graph
-            T (int): the time horizon for rollouts
-            rollout_batch_size (int): number of parallel rollouts per DDPG agent
-            subtract_goals (function): function that subtracts goals from each other
-            relative_goals (boolean): whether or not relative goals should be fed into the network
-            clip_pos_returns (boolean): whether or not positive returns should be clipped
-            clip_return (float): clip returns to be in [-clip_return, clip_return]
-            sample_transitions (function) function that samples from the replay buffer
-            gamma (float): gamma used for Q learning updates
-            reuse (boolean): whether or not the networks should be reused
-            bc_loss: whether or not the behavior cloning loss should be used as an auxilliary loss
-            q_filter: whether or not a filter on the q value update should be used when training with demonstartions
-            num_demo: Number of episodes in to be used in the demonstration buffer
-            demo_batch_size: number of samples to be used from the demonstrations buffer, per mpi thread
-            prm_loss_weight: Weight corresponding to the primary loss
-            aux_loss_weight: Weight corresponding to the auxilliary loss also called the cloning loss
+            input_dims (dict of ints):    dimensions for the observation (o),
+                                          the goal (g), and the actions (u)
+            buffer_size (int):            number of transitions that are 
+                                          stored in the replay buffer
+            hidden (int):                 number of units in the hidden layers. 
+            layers (int):                 number of hidden layers
+            network_class (str):          the network class that should be used 
+                                          (e.g. 'baselines.her.ActorCritic')
+            polyak (float):               coefficient for Polyak-averaging of 
+                                          the target network
+            batch_size (int):             batch size for training
+            Q_lr (float):                 learning rate for the Q (critic) 
+                                          network
+            pi_lr (float):                learning rate for the pi (actor) 
+                                          network
+            norm_eps (float):             a small value used in the 
+                                          normalizer to avoid numerical 
+                                          instabilities
+            norm_clip (float):            normalized inputs are clipped to be 
+                                          in [-norm_clip, norm_clip]
+            max_u (float):                maximum action magnitude, i.e. 
+                                          actions are in [-max_u, max_u]
+            action_l2 (float):            coefficient for L2 penalty on the 
+                                          actions
+            clip_obs (float):             clip observations before 
+                                          normalization to be in 
+                                          [-clip_obs, clip_obs]
+            scope (str):                  the scope used for the TensorFlow graph
+            T (int):                      the time horizon for rollouts
+            rollout_batch_size (int):     number of parallel rollouts per DDPG 
+                                          agent
+            subtract_goals (function):    function that subtracts goals from 
+                                          each other
+            relative_goals (boolean):     whether or not relative goals should 
+                                          be fed into the network
+            clip_pos_returns (boolean):   whether or not positive returns 
+                                          should be clipped
+            clip_return (float):          clip returns to be in 
+                                          [-clip_return, clip_return]
+            sample_transitions (function) function that samples from the 
+                                          replay buffer
+            gamma (float):                gamma used for Q learning updates
+            reuse (boolean):              whether or not the networks should 
+                                          be reused
+            bc_loss:                      whether or not the behavior cloning 
+                                          loss should be used as an auxilliary 
+                                          loss
+            q_filter:                     whether or not a filter on the q 
+                                          value update should be used when 
+                                          training with demonstartions
+            num_demo:                     Number of episodes in to be used in 
+                                          the demonstration buffer
+            demo_batch_size:              number of samples to be used from 
+                                          the demonstrations buffer, per mpi 
+                                          thread
+            prm_loss_weight:              Weight corresponding to the primary 
+                                          loss
+            aux_loss_weight:              Weight corresponding to the 
+                                          auxilliary loss also called the 
+                                          cloning loss
         """
         if self.clip_return is None:
             self.clip_return = np.inf
 
+        # Instantiate the actor critic class
         self.create_actor_critic = import_function(self.network_class)
 
         input_shapes = dims_to_shapes(self.input_dims)
@@ -92,6 +124,7 @@ class DDPG(object):
                 tf.placeholder(tf.float32, shape=shape) for shape in self.stage_shapes.values()]
             self.stage_op = self.staging_tf.put(self.buffer_ph_tf)
 
+            # This one uses the actor critic class
             self._create_network(reuse=reuse)
 
         # Configure the replay buffer.

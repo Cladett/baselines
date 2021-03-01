@@ -266,7 +266,7 @@ def main(args):
         save_path = osp.expanduser(args.save_path)
         model.save(save_path)
 
-    # Playing back the trained model
+    # Playing back the trained model when play is passed as args.
     if args.play:
         logger.log("Running trained model")
         obs = env.reset()
