@@ -38,3 +38,51 @@ test_with_polyak: False
 Creating a DDPG agent with action space 4 x 1.0...
 Training...
 Demo buffer size:  5000
+---------------------------------
+| epoch              | 0        |
+| stats_g/mean       | -0.307   |
+| stats_g/std        | 0.435    |
+| stats_o/mean       | -0.135   |
+| stats_o/std        | 0.425    |
+| test/episode       | 10       |
+| test/mean_Q        | -2       |
+| test/success_rate  | 0        |
+| train/episode      | 20       |
+| train/success_rate | 0        |
+---------------------------------
+---------------------------------
+| epoch              | 1        |
+| stats_g/mean       | -0.333   |
+| stats_g/std        | 0.442    |
+| stats_o/mean       | -0.148   |
+| stats_o/std        | 0.425    |
+| test/episode       | 20       |
+| test/mean_Q        | -2.77    |
+| test/success_rate  | 0        |
+| train/episode      | 40       |
+| train/success_rate | 0        |
+---------------------------------
+---------------------------------
+| epoch              | 2        |
+| stats_g/mean       | -0.341   |
+| stats_g/std        | 0.444    |
+| stats_o/mean       | -0.147   |
+| stats_o/std        | 0.421    |
+| test/episode       | 30       |
+| test/mean_Q        | -3.65    |
+| test/success_rate  | 0        |
+| train/episode      | 60       |
+| train/success_rate | 0.00625  |
+---------------------------------
+---------------------------------
+| epoch              | 3        |
+| stats_g/mean       | -0.353   |
+| stats_g/std        | 0.445    |
+| stats_o/mean       | -0.153   |
+| stats_o/std        | 0.42     |
+| test/episode       | 40       |
+| test/mean_Q        | -4.51    |
+| test/success_rate  | 0        |
+| train/episode      | 80       |
+| train/success_rate | 0        |
+---------------------------------

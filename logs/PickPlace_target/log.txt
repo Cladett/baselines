@@ -73,16 +73,52 @@ Demo buffer size:  5000
 | train/episode      | 150      |
 | train/success_rate | 0.065    |
 ---------------------------------
+---------------------------------
+| epoch              | 3        |
+| stats_g/mean       | -0.346   |
+| stats_g/std        | 0.445    |
+| stats_o/mean       | -0.148   |
+| stats_o/std        | 0.415    |
+| test/episode       | 40       |
+| test/mean_Q        | -6.62    |
+| test/success_rate  | 0.188    |
+| train/episode      | 200      |
+| train/success_rate | 0.0425   |
+---------------------------------
+---------------------------------
+| epoch              | 4        |
+| stats_g/mean       | -0.347   |
+| stats_g/std        | 0.445    |
+| stats_o/mean       | -0.149   |
+| stats_o/std        | 0.415    |
+| test/episode       | 50       |
+| test/mean_Q        | -7.03    |
+| test/success_rate  | 0.375    |
+| train/episode      | 250      |
+| train/success_rate | 0.0375   |
+---------------------------------
 ---------------
 ---------------------------------
-| epoch              | 2        |
-| stats_g/mean       | -0.339   |
-| stats_g/std        | 0.44     |
-| stats_o/mean       | -0.132   |
-| stats_o/std        | 0.419    |
-| test/episode       | 30       |
-| test/mean_Q        | -7.27    |
+| epoch              | 4        |
+| stats_g/mean       | -0.349   |
+| stats_g/std        | 0.446    |
+| stats_o/mean       | -0.141   |
+| stats_o/std        | 0.424    |
+| test/episode       | 50       |
+| test/mean_Q        | -9.21    |
 | test/success_rate  | 0        |
-| train/episode      | 150      |
+| train/episode      | 250      |
+| train/success_rate | 0.02     |
+---------------------------------
+---------------------------------
+| epoch              | 5        |
+| stats_g/mean       | -0.351   |
+| stats_g/std        | 0.447    |
+| stats_o/mean       | -0.146   |
+| stats_o/std        | 0.423    |
+| test/episode       | 60       |
+| test/mean_Q        | -9.58    |
+| test/success_rate  | 0.2      |
+| train/episode      | 300      |
 | train/success_rate | 0.02     |
 ---------------------------------
