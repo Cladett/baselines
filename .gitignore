@@ -19,7 +19,7 @@ keys/
 *.sublime-workspace
 
 .idea
-
+/logs/old
 .ipynb_checkpoints
 ghostdriver.log
 
