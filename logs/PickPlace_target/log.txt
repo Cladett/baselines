@@ -21,7 +21,7 @@ ddpg_params: {'buffer_size': 1000000, 'hidden': 256, 'layers': 3, 'network_class
 demo_batch_size: 128
 env_name: dVRLPickPlaceTarget-v0
 gamma: 0.99
-make_env: <function prepare_params.<locals>.make_env at 0x7fdfbf5cd9d8>
+make_env: <function prepare_params.<locals>.make_env at 0x7f4afb8d19d8>
 n_batches: 40
 n_cycles: 50
 n_test_rollouts: 10
@@ -39,86 +39,13 @@ Training...
 Demo buffer size:  5000
 ---------------------------------
 | epoch              | 0        |
-| stats_g/mean       | -0.325   |
-| stats_g/std        | 0.441    |
-| stats_o/mean       | -0.139   |
-| stats_o/std        | 0.418    |
+| stats_g/mean       | -0.34    |
+| stats_g/std        | 0.439    |
+| stats_o/mean       | -0.162   |
+| stats_o/std        | 0.412    |
 | test/episode       | 10       |
-| test/mean_Q        | -2.98    |
+| test/mean_Q        | -2.89    |
 | test/success_rate  | 0        |
 | train/episode      | 50       |
 | train/success_rate | 0        |
----------------------------------
----------------------------------
-| epoch              | 1        |
-| stats_g/mean       | -0.348   |
-| stats_g/std        | 0.444    |
-| stats_o/mean       | -0.149   |
-| stats_o/std        | 0.416    |
-| test/episode       | 20       |
-| test/mean_Q        | -4.19    |
-| test/success_rate  | 0.163    |
-| train/episode      | 100      |
-| train/success_rate | 0.02     |
----------------------------------
----------------------------------
-| epoch              | 2        |
-| stats_g/mean       | -0.35    |
-| stats_g/std        | 0.444    |
-| stats_o/mean       | -0.15    |
-| stats_o/std        | 0.415    |
-| test/episode       | 30       |
-| test/mean_Q        | -5.12    |
-| test/success_rate  | 0.138    |
-| train/episode      | 150      |
-| train/success_rate | 0.065    |
----------------------------------
----------------------------------
-| epoch              | 3        |
-| stats_g/mean       | -0.346   |
-| stats_g/std        | 0.445    |
-| stats_o/mean       | -0.148   |
-| stats_o/std        | 0.415    |
-| test/episode       | 40       |
-| test/mean_Q        | -6.62    |
-| test/success_rate  | 0.188    |
-| train/episode      | 200      |
-| train/success_rate | 0.0425   |
----------------------------------
----------------------------------
-| epoch              | 4        |
-| stats_g/mean       | -0.347   |
-| stats_g/std        | 0.445    |
-| stats_o/mean       | -0.149   |
-| stats_o/std        | 0.415    |
-| test/episode       | 50       |
-| test/mean_Q        | -7.03    |
-| test/success_rate  | 0.375    |
-| train/episode      | 250      |
-| train/success_rate | 0.0375   |
----------------------------------
----------------
----------------------------------
-| epoch              | 4        |
-| stats_g/mean       | -0.349   |
-| stats_g/std        | 0.446    |
-| stats_o/mean       | -0.141   |
-| stats_o/std        | 0.424    |
-| test/episode       | 50       |
-| test/mean_Q        | -9.21    |
-| test/success_rate  | 0        |
-| train/episode      | 250      |
-| train/success_rate | 0.02     |
----------------------------------
----------------------------------
-| epoch              | 5        |
-| stats_g/mean       | -0.351   |
-| stats_g/std        | 0.447    |
-| stats_o/mean       | -0.146   |
-| stats_o/std        | 0.423    |
-| test/episode       | 60       |
-| test/mean_Q        | -9.58    |
-| test/success_rate  | 0.2      |
-| train/episode      | 300      |
-| train/success_rate | 0.02     |
 ---------------------------------
