@@ -522,3 +522,15 @@ Training...
 | train/episode      | 2.2e+03  |
 | train/success_rate | 0.843    |
 ---------------------------------
+---------------------------------
+| epoch              | 44       |
+| stats_g/mean       | -0.314   |
+| stats_g/std        | 0.448    |
+| stats_o/mean       | -0.161   |
+| stats_o/std        | 0.411    |
+| test/episode       | 450      |
+| test/mean_Q        | -5.6     |
+| test/success_rate  | 0.8      |
+| train/episode      | 2.25e+03 |
+| train/success_rate | 0.91     |
+---------------------------------
