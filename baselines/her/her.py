@@ -134,7 +134,8 @@ def learn(*, network, env, total_timesteps,
     # Mod by Claudia D'Ettorre (19 Nov 2020): if there is no demo file there 
     # there is no behavioural cloning (bc_loss)
     params['bc_loss'] = 1 if demo_file is not None else 0
-    # params['num_demo'] = 10
+    # Because default number of demo is 50
+    params['num_demo'] = 15
 
     params.update(kwargs)
     config.log_params(params, logger=logger)
